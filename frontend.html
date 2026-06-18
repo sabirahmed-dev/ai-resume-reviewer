@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Resume Reviewer</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    padding: 48px 16px;
+    margin: 0;
+  }
+
+  .container {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 6px;
+  }
+
+  .subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 32px;
+  }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .upload-area {
+    border: 2px dashed #d0d0d0;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    background: #fafafa;
+    margin-bottom: 16px;
+  }
+
+  .upload-area p {
+    color: #888;
+    font-size: 14px;
+    margin: 0 0 12px;
+  }
+
+  input[type="file"] {
+    font-size: 14px;
+    color: #444;
+  }
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #4f6ef7;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  button:hover { background: #3a5be0; }
+  #loading { display: none; text-align: center; color: #666; font-size: 14px; padding: 20px 0; }
+
+  #results {
+  display: none;
+  margin-top: 28px;
+  border-top: 1px solid #eee;
+  padding-top: 24px;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+  #results h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 16px;
+  }
+
+  .score-box {
+    background: #f0f4ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .score-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #4f6ef7;
+  }
+
+  .score-label { font-size: 14px; color: #555; }
+  .score-label strong { display: block; color: #111; }
+
+  .section { margin-bottom: 16px; }
+  .section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin: 0 0 8px;
+  }
+
+  .section p { font-size: 14px; color: #333; line-height: 1.6; margin: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>AI Resume Reviewer</h1>
+  <p class="subtitle">Upload your resume and get instant feedback.</p>
+
+  <form id="upload-form" enctype="multipart/form-data" method="POST" action="http://127.0.0.1:5000/review">
+    <label for="resume">Resume file</label>
+    <div class="upload-area">
+      <p>PDF · Max 10 MB</p>
+      <input type="file" id="resume" name="pdf" accept=".pdf" required />
+    </div>
+    <button type="submit">Analyze Resume</button>
+  </form>
+
+  <!-- Show this while waiting for the server response -->
+  <div id="loading">
+    Analyzing your resume, please wait…
+  </div>
+
+  <!-- Populate this section with results from your Flask route -->
+  <div id="results">
+    <h2>Your Results</h2>
+
+    <div class="score-box">
+      <div class="score-number" id="score">74</div>
+      <div class="score-label"><strong id="grade">Good</strong> Resume score out of 100</div>
+    </div>
+
+    <div class="section">
+      <h3>Summary</h3>
+      <p id="summary">Your resume is clear and well-structured. A few targeted improvements will significantly increase your interview rate.</p>
+    </div>
+
+    <div class="section">
+      <h3>Strengths</h3>
+      <p id="strengths">Clean formatting, consistent dates, strong employer names.</p>
+    </div>
+
+    <div class="section">
+      <h3>Weaknesses</h3>
+      <p id="weaknesses">Most bullet points lack measurable results. Key ATS keywords are missing.</p>
+    </div>
+
+    <div class="section">
+      <h3>Top suggestions</h3>
+      <p id="suggestions">1. Add numbers to at least 60% of your bullet points. 2. Include keywords from the job description. 3. Shorten older roles to 2 bullets each.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('upload-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById('resume');
+    const loadingDiv = document.getElementById('loading');
+    const resultsDiv = document.getElementById('results');
+
+    if (!fileInput.files[0]) {
+        alert('Please select a PDF file first.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('pdf', fileInput.files[0]);
+
+    loadingDiv.style.display = 'block';
+    resultsDiv.style.display = 'none';
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/review', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server Error: ${response.status}`);
+        }
+
+        const text = await response.text();
+
+        resultsDiv.innerHTML = `
+            <h2>Your Analysis</h2>
+            <div style="
+                background:#f8f9ff;
+                border:1px solid #e5e8ff;
+                border-radius:8px;
+                padding:20px;
+                line-height:1.7;
+                white-space:pre-wrap;
+                word-break:break-word;
+                font-size:14px;
+                color:#333;
+            ">
+                ${text}
+            </div>
+        `;
+
+        resultsDiv.style.display = 'block';
+
+    } catch (error) {
+
+        resultsDiv.innerHTML = `
+            <div style="
+                background:#fff0f0;
+                border:1px solid #ffcccc;
+                color:#cc0000;
+                padding:15px;
+                border-radius:8px;
+            ">
+                Error: ${error.message}
+            </div>
+        `;
+
+        resultsDiv.style.display = 'block';
+
+    } finally {
+        loadingDiv.style.display = 'none';
+    }
+});
+</script>
+</body>
+</html>
