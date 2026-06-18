@@ -128,16 +128,23 @@ def post_resume():
 
     full_prompt = prompt + text
 
-    
-    try:
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=full_prompt
-        )
-    except:
-        return "AI service temporarily unavailable. Please try again."
+    models = [
+        "gemini-3.5-flash",
+        "gemini-2.5-flash",
+        "gemini-2.5-pro"
+        ]
 
-    return response.text
+    for model in models:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=full_prompt
+            )
+            return response.text
+        except Exception:
+            continue
+
+    return "All Gemini models are currently unavailable. Please try again later."
 
 if __name__ == "__main__":
     app.run(debug=True)
