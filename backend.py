@@ -9,7 +9,7 @@ CORS(app)
 
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
-)e
+)
 
 prompt = """
     You are an expert technical recruiter, hiring manager, and resume reviewer with experience evaluating resumes for internships, entry-level software engineering roles, full-stack development roles, backend development roles, AI application development roles, and GenAI-related positions.
