@@ -135,7 +135,7 @@
   <h1>AI Resume Reviewer</h1>
   <p class="subtitle">Upload your resume and get instant feedback.</p>
 
-  <form id="upload-form" enctype="multipart/form-data" method="POST" action="http://127.0.0.1:8000/review">
+  <form id="upload-form" enctype="multipart/form-data">
     <label for="resume">Resume file</label>
     <div class="upload-area">
       <p>PDF · Max 10 MB</p>
@@ -201,7 +201,7 @@ document.getElementById('upload-form').addEventListener('submit', async function
     resultsDiv.style.display = 'none';
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/review', {
+        const response = await fetch('https://ai-resume-reviewer-1.onrender.com/review', {
             method: 'POST',
             body: formData
         });

@@ -1,56 +1,105 @@
 AI Resume Reviewer
 
-AI-powered resume analysis tool built with Flask, Gemini API, and PyMuPDF.
+AI-powered resume analysis tool that reviews resumes, identifies strengths and weaknesses, evaluates ATS compatibility, and provides actionable improvement suggestions.
 
-Features
+Live Backend:
+
+https://ai-resume-reviewer-1.onrender.com
+
+Features:
 
 * Upload PDF resumes
+* AI-powered resume analysis using Gemini
 * Resume scoring
-* ATS analysis
-* Strengths and weaknesses review
-* Technical skills analysis
+* ATS compatibility review
+* Strengths and weaknesses analysis
+* Technical skills evaluation
+* Project evaluation
+* Interview readiness assessment
 * Actionable improvement suggestions
 
-Screenshots
+Screenshots:
 
 Home Page
 
-![Home Page](screenshots/homepage.png)
+![homepage](screenshots/homepage.png)
 
-Resume Analysis
+Analysis Result
 
-![Results](screenshots/result.png)
+![results](screenshots/result.png)
 
-Tech Stack
+Tech Stack:
+
+Backend
 
 * Python
 * Flask
-* Gemini API
+* Flask-CORS
+* Google Gemini API
 * PyMuPDF
+* Gunicorn
+
+Frontend
+
 * HTML
 * CSS
 * JavaScript
-* Gunicorn
 
-Run Locally
+Deployment
 
-Install dependencies:
+* Render
+* GitHub
 
-pip install -r requirements.txt
+Project Structure:
 
-Start backend:
+ai-resume-reviewer/
+│
+├── backend.py
+├── frontend.html
+├── requirements.txt
+├── Procfile
+├── README.md
+├── screenshots/
+│   ├── homepage.png
+│   └── result.png
 
-python3 backend.py
+API Endpoint
 
-Open frontend.html in your browser.
+Analyze Resume
+
+POST /review
+
+Upload a PDF resume and receive AI-generated feedback.
 
 Edge Cases Handled
 
 * No file uploaded
-* Invalid PDF
+* Invalid PDF file
 * Empty PDF
-* More than 5 pages
-* Gemini API failure
+* PDF exceeds 5 pages
+* AI service unavailable
+* Unsupported file type
+
+What I Learned
+
+* Flask API development
+* File uploads in Flask
+* PDF processing with PyMuPDF
+* Gemini API integration
+* Error handling
+* Environment variables
+* Git and GitHub workflows
+* Deployment using Render
+* Frontend to backend communication
+
+Future Improvements
+
+* Structured JSON responses
+* Better frontend formatting
+* Resume history
+* Downloadable reports
+* Authentication system
+* Full frontend deployment
 
 Author
 
